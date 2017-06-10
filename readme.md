@@ -1,4 +1,4 @@
-# python-wordpress-bakcup
+# python-wordpress-backup
  Backup wordpress site and database. Zip entire folder and gzip sql database. Fully automatic.
  
 # Core functions

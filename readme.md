@@ -11,14 +11,9 @@
 
 usage: pyb.py [-h] [-n] d
 
-Wordpress backup
-
-positional arguments:
-  d           Base directory
-
-optional arguments:
-  -h, --help  show this help message and exit
-  -n, --nodb  Ignore wp-config file
+d - Base directory
+-h, --help  show this help message and exit
+-n, --nodb  Ignore wp-config file
 
 # Example
 

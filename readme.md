@@ -9,6 +9,23 @@
 
  # Usage
 
-Working if wordpress is in 'wordpress' directory.
+usage: pyb.py [-h] [-n] d
 
-python pyb.py
+Wordpress backup
+
+positional arguments:
+  d           Base directory
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -n, --nodb  Ignore wp-config file
+
+# Example
+
+pyb.py wordpress --nodb
+
+Result: backup only wordpress directory
+
+pyb.py wordpress 
+
+Result: fully backup wordpress and database

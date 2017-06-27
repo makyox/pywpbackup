@@ -16,26 +16,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
+import sys
 import optparse
 import os
 import datetime
 import shutil
 import re
+import argparse
 from subprocess import Popen, PIPE
  
 date = datetime.datetime.now().strftime('%Y%m%d-%s')
 f_date = datetime.datetime.now().strftime('%Y%m%d')
- 
+parser = argparse.ArgumentParser(description='Wordpress backup')
+parser.add_argument("d", help="Base directory", type=str)
+parser.add_argument('-n','--nodb', help='Ignore wp-config file', action='store_true', required=False)
+args2 = vars(parser.parse_args())
+args3 = parser.parse_args()
+directory = args3.d
+
+
 define_pattern = re.compile(r"""\bdefine\(\s*('|")(.*)\1\s*,\s*('|")(.*)\3\)\s*;""")
 assign_pattern = re.compile(r"""(^|;)\s*\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*=\s*('|")(.*)\3\s*;""")
 
 php_vars = {}
-for line in open("wordpress/wp-config.php"):
-  for match in define_pattern.finditer(line):
-    php_vars[match.group(2)]=match.group(4)
-  for match in assign_pattern.finditer(line):
-    php_vars[match.group(2)]=match.group(4)
+if not args2['nodb']:  
+  for line in open(directory+"/wp-config.php"):
+    for match in define_pattern.finditer(line):
+      php_vars[match.group(2)]=match.group(4)
+    for match in assign_pattern.finditer(line):
+      php_vars[match.group(2)]=match.group(4)
 
 
 def backup_all_databases():
@@ -50,7 +59,7 @@ def backup_all_databases():
 def tar_html_folder():
     output_filename_1 = "%s.html_dir"  % f_date
     output_filename_2 = "%s.html_dir.zip"  % f_date
-    dir_name = 'wordpress/'
+    dir_name = directory+'/'
     dst = "%s" % date
     shutil.make_archive(output_filename_1, 'zip', dir_name)
     shutil.move(output_filename_2, dst)
@@ -58,10 +67,11 @@ def tar_html_folder():
 def main():
     archive_path = "%s" % date
     os.mkdir(archive_path, 0755)
-    backup_all_databases()
-    src_file = "%s.sql.gz" % f_date
-    dst = "%s" % date
-    shutil.move(src_file, dst)
+    if not args2['nodb']:
+        backup_all_databases()
+        src_file = "%s.sql.gz" % f_date
+        dst = "%s" % date
+        shutil.move(src_file, dst)
     tar_html_folder()
 
 if __name__ == "__main__":
